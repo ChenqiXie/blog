@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    {% if current_user.is_authenticated %}
+    <div class="mb-4 text-end">
+        <a href="{{ url_for('main.create_post') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-pen"></i> 发布新文章
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-8">
+            {% for post in posts.items %}
+            <div class="card mb-4 hover-shadow">
+                <div class="card-body">
+                    <h2 class="card-title h3">
+                        <a href="{{ url_for('main.post', id=post.id) }}" class="text-decoration-none text-dark hover-primary">
+                            {{ post.title }}
+                        </a>
+                    </h2>
+                    <div class="text-muted mb-3 small">
+                        <span class="me-3">
+                            <img src="{{ post.user.get_avatar_url() }}" 
+                                 alt="作者头像" 
+                                 class="rounded-circle me-1"
+                                 style="width: 24px; height: 24px; object-fit: cover;">
+                            {{ post.user.username }}
+                        </span>
+                        <span class="me-3">
+                            <i class="far fa-calendar-alt"></i> {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </span>
+                    </div>
+                    <div class="card-text mb-3 text-secondary">
+                        {{ post.content[:200]|striptags }}...
+                    </div>
+                    <a href="{{ url_for('main.post', id=post.id) }}" class="btn btn-outline-primary">
+                        阅读全文 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- 分页 -->
+            {% if posts.items %}
+            <nav aria-label="Page navigation" class="my-4">
+                <ul class="pagination justify-content-center">
+                    {% if posts.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('main.index', page=posts.prev_num) }}">
+                            <i class="fas fa-chevron-left"></i> 上一页
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-left"></i> 上一页</span>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if page_num %}
+                    {% if posts.page == page_num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('main.index', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if posts.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('main.index', page=posts.next_num) }}">
+                            下一页 <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">下一页 <i class="fas fa-chevron-right"></i></span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
+                <h3 class="text-muted">还没有任何文章</h3>
+                {% if current_user.is_authenticated %}
+                <p class="text-muted">点击上方的"发布新文章"按钮开始写作吧！</p>
+                {% else %}
+                <p class="text-muted">登录后即可发布文章</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">关于博客</h5>
+                    <p class="card-text">欢迎来到我的博客！这里记录着我的思考和分享。</p>
+                    {% if not current_user.is_authenticated %}
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('main.login') }}" class="btn btn-primary">登录</a>
+                        <a href="{{ url_for('main.register') }}" class="btn btn-outline-primary">注册</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加到 base.html 的 style 部分 -->
+<style>
+    .hover-shadow {
+        transition: all 0.3s ease;
+    }
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }
+    .hover-primary {
+        transition: color 0.3s ease;
+    }
+    .hover-primary:hover {
+        color: #0d6efd !important;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .page-link {
+        border: none;
+        margin: 0 3px;
+        border-radius: 5px !important;
+    }
+    .page-link:focus {
+        box-shadow: none;
+    }
+    .page-item.active .page-link {
+        background-color: #0d6efd;
+    }
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+</style>
+{% endblock %} 

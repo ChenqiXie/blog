@@ -169,3 +169,6 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+app/blog.db
+app/static/avatars/user_1_1733992641.jpg
+migrations/alembic.ini

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }} - 我的博客</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding-top: 60px;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: rgba(33, 37, 41, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #4a90e2;
+            border-color: #4a90e2;
+        }
+
+        .btn-primary:hover {
+            background-color: #357abd;
+            border-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-title {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .post-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .post-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .pagination .page-link {
+            border: none;
+            margin: 0 3px;
+            border-radius: 8px;
+            color: #4a90e2;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .dropdown-menu {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .dropdown-item {
+            padding: 8px 20px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* 编辑器样式 */
+        .ck-editor__editable {
+            min-height: 300px;
+            max-height: 500px;
+            background-color: white !important;
+        }
+
+        .ck.ck-editor__main>.ck-editor__editable {
+            background-color: white;
+        }
+
+        .ck.ck-editor {
+            border-radius: 8px;
+        }
+
+        .countdown-container {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%);
+            padding: 30px 0;
+            margin: -60px 0 30px 0;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+
+        .countdown-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .countdown-title {
+            color: white;
+            margin-bottom: 30px;
+            font-weight: 300;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .countdown-title .highlight {
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .countdown-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .countdown-value {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .countdown-item:hover .countdown-value {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .countdown-value span {
+            font-size: 3rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .countdown-label {
+            display: block;
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* 烟花动画 */
+        @keyframes firework {
+            0% { transform: translate(var(--x), var(--initialY)); width: var(--initialSize); opacity: 1; }
+            50% { width: 0.5vmin; opacity: 1; }
+            100% { width: var(--finalSize); opacity: 0; }
+        }
+
+        .firework {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .firework::before, .firework::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #ff6b6b, #ffd700);
+            border-radius: 50%;
+            animation: firework 2s infinite;
+        }
+
+        .firework:nth-child(2) {
+            transform: translate(-50%, -50%) rotate(30deg);
+        }
+
+        .firework:nth-child(3) {
+            transform: translate(-50%, -50%) rotate(-30deg);
+        }
+
+        @media (max-width: 768px) {
+            .countdown-timer {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .countdown-value {
+                padding: 15px 20px;
+            }
+            
+            .countdown-value span {
+                font-size: 2rem;
+            }
+            
+            .countdown-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .countdown-container {
+                padding: 20px 0;
+            }
+            
+            .countdown-timer {
+                gap: 10px;
+            }
+            
+            .countdown-value {
+                padding: 10px 15px;
+            }
+            
+            .countdown-value span {
+                font-size: 1.5rem;
+            }
+            
+            .countdown-label {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* 烟花特效样式 */
+        .fireworks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+        }
+
+        @keyframes firework-animation {
+            0% {
+                transform: translate(var(--x), var(--initialY));
+                width: var(--initialSize);
+                opacity: 1;
+            }
+            50% {
+                width: 0.5vmin;
+                opacity: 1;
+            }
+            100% {
+                width: var(--finalSize);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: particle-animation var(--duration) ease-out infinite;
+            transform: rotate(var(--angle));
+        }
+
+        @keyframes particle-animation {
+            0% {
+                transform: rotate(var(--angle)) translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(var(--angle)) translateY(var(--distance)) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">我的博客</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">首页</a>
+                    </li>
+                    {% if current_user.is_anonymous %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.login') }}">登录</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.register') }}">注册</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <img src="{{ current_user.get_avatar_url() }}" 
+                                 alt="头像" 
+                                 class="rounded-circle me-1"
+                                 style="width: 24px; height: 24px; object-fit: cover;">
+                            {{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">
+                                <i class="fas fa-user me-2"></i>个人资料
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>退出
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 新年倒计时区域 -->
+        <div class="countdown-container">
+            <div class="countdown-content">
+                <h2 class="countdown-title">
+                    <span class="highlight">2025年元旦</span> 倒计时
+                    <div class="firework"></div>
+                    <div class="firework"></div>
+                    <div class="firework"></div>
+                </h2>
+                <div class="countdown-timer">
+                    <div class="countdown-item">
+                        <div class="countdown-value">
+                            <span id="days">00</span>
+                        </div>
+                        <span class="countdown-label">天</span>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value">
+                            <span id="hours">00</span>
+                        </div>
+                        <span class="countdown-label">时</span>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value">
+                            <span id="minutes">00</span>
+                        </div>
+                        <span class="countdown-label">分</span>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value">
+                            <span id="seconds">00</span>
+                        </div>
+                        <span class="countdown-label">秒</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="fireworks-container" id="fireworksContainer"></div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // 烟花特效函数
+    class Firework {
+        constructor(container) {
+            this.container = container;
+            this.colors = ['#ff0', '#ff3', '#f90', '#f09', '#90f', '#90f', '#fff'];
+        }
+
+        createParticles(x, y) {
+            const particleCount = 30;
+            const angleStep = (Math.PI * 2) / particleCount;
+            const particles = [];
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                const angle = angleStep * i;
+                const velocity = 2 + Math.random() * 2;
+                const hue = Math.random() * 360;
+                const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    left: ${x}px;
+                    top: ${y}px;
+                    width: 4px;
+                    height: 4px;
+                    background: ${color};
+                    border-radius: 50%;
+                    transform-origin: center;
+                    --angle: ${angle}rad;
+                    --duration: ${0.8 + Math.random() * 0.6}s;
+                    --distance: ${50 + Math.random() * 50}px;
+                `;
+
+                this.container.appendChild(particle);
+                particles.push(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 1500);
+            }
+        }
+
+        launch() {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * (window.innerHeight / 2);
+            this.createParticles(x, y);
+        }
+    }
+
+    // 更新倒计时函数
+    function updateCountdown() {
+        const now = new Date().getTime();
+        // 设置目标时间为2025年1月1日00:00:00
+        const targetDate = new Date('January 1, 2025 00:00:00').getTime();
+        const timeLeft = targetDate - now;
+
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        document.getElementById('days').textContent = days < 10 ? '0' + days : days;
+        document.getElementById('hours').textContent = hours < 10 ? '0' + hours : hours;
+        document.getElementById('minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
+        document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+
+        // 如果到达目标时间
+        if (timeLeft < 0) {
+            clearInterval(countdownInterval);
+            document.querySelector('.countdown-title').innerHTML = '🎉 新年快乐 2025！🎉';
+            document.getElementById('days').textContent = '00';
+            document.getElementById('hours').textContent = '00';
+            document.getElementById('minutes').textContent = '00';
+            document.getElementById('seconds').textContent = '00';
+
+            // 显示烟花容器
+            const fireworksContainer = document.getElementById('fireworksContainer');
+            fireworksContainer.style.display = 'block';
+
+            // 创建烟花实例
+            const firework = new Firework(fireworksContainer);
+
+            // 持续发射烟花
+            const fireworkInterval = setInterval(() => {
+                firework.launch();
+            }, 300);
+
+            // 30秒后停止烟花
+            setTimeout(() => {
+                clearInterval(fireworkInterval);
+                fireworksContainer.style.display = 'none';
+            }, 30000);
+
+            // 添加动画效果
+            document.querySelectorAll('.countdown-value').forEach(value => {
+                value.style.background = 'rgba(255, 215, 0, 0.2)';
+                value.style.borderColor = 'rgba(255, 215, 0, 0.4)';
+            });
+        }
+    }
+
+    // 每秒更新一次倒计时
+    const countdownInterval = setInterval(updateCountdown, 1000);
+
+    // 立即执行一次
+    updateCountdown();
+
+    // 添加数字变化的过渡效果
+    document.querySelectorAll('.countdown-value').forEach(value => {
+        value.style.transition = 'all 0.3s ease';
+    });
+    </script>
+</body>
+</html> 
